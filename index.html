@@ -1,267 +1,463 @@
-o<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8">
-<title>Aarya Agent Workbench — Minimal (Menu + Console Button)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style id="aarya-font-and-upload-fix">
-:root {
-  --aarya-font: system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", "Noto Sans Devanagari", "Roboto", "Helvetica Neue",
-    Arial, sans-serif;
-  --bg: #020617;
-  --border-subtle: #1e293b;
-  --accent: #38bdf8;
-  --accent-green: #16a34a;
-  --text-main: #e5e7eb;
-}
 
-/* Global */
-html, body {
-  margin:0; padding:0;
-  background:#020617;
-  color:var(--text-main);
-  font-family:var(--aarya-font);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aarya Agent Workbench — Minimal (Menu + Console Button)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-/* Save button (top-right) */
-#btnSaveHtml__aarya {
-  position:fixed; top:10px; right:10px;
-  padding:10px 16px;
-  background:var(--accent-green);
-  color:white;
-  border:none;
-  border-radius:999px;
-  box-shadow:0 8px 18px rgba(0,0,0,0.6);
-  font-size:13px;
-  z-index:1001;
-}
+  <!-- Home + Agent buttons -->
+  <style id="aaryaHomeButtonCSS">
+    #homeButton__aarya {
+      position: fixed;
+      left: 16px;
+      bottom: 12px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 1px solid #0b1120;
+      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.85);
+      z-index: 1001;
+    }
+    #homeButton__aarya:hover {
+      background: #0f172aaa;
+    }
+  </style>
 
-/* Menu icon (top-left) */
-#menuButton__aarya {
-  position:fixed; top:16px; left:16px;
-  width:52px; height:52px;
-  border-radius:999px;
-  border:1px solid #0b1120;
-  background:radial-gradient(circle at 30% 30%, #0f172a,#020617);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 10px 24px rgba(0,0,0,0.7);
-  cursor:pointer;
-  z-index:1001;
-}
-#menuButton__aarya span {
-  display:block;
-  width:22px; height:2px;
-  background:#e5e7eb;
-  border-radius:999px;
-  box-shadow:0 7px 0 #e5e7eb, 0 -7px 0 #e5e7eb;
-}
+  <style id="aaryaHomeAgentCSS">
+    /* Bottom-left round buttons */
+    #homeButton__aarya,
+    #agentViewButton__aarya {
+      position: fixed;
+      bottom: 12px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 1px solid #0b1120;
+      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.85);
+      z-index: 1001;
+    }
+    #homeButton__aarya { left: 16px; }
+    #agentViewButton__aarya { left: 84px; }
 
-/* Upload tray (right) */
-#aaryaUploadTray {
-  position:fixed; top:70px; right:10px;
-  display:flex; flex-direction:column; gap:8px;
-  z-index:1000;
-}
-#aaryaUploadTray .tray-item {
-  width:48px; height:48px;
-  border:1px solid var(--border-subtle);
-  border-radius:12px;
-  overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
-  background:#020617;
-  box-shadow:0 10px 24px rgba(0,0,0,0.8);
-  cursor:pointer;
-}
-#aaryaUploadTray img, #aaryaUploadTray video {
-  width:100%; height:100%; object-fit:cover; display:none;
-}
+    #homeButton__aarya:hover,
+    #agentViewButton__aarya:hover {
+      background: #0f172aaa;
+    }
 
-/* Agent box (bottom-right) */
-#agentBox__aarya {
-  position:fixed; right:10px; bottom:70px;
-  width:min(460px, 96vw);
-  background:#020617;
-  border:1px solid var(--border-subtle);
-  border-radius:16px;
-  box-shadow:0 14px 36px rgba(0,0,0,0.8);
-  padding:10px;
-  z-index:999;
-  transition:transform 0.22s ease, opacity 0.22s ease;
-}
-#agentInput__aarya {
-  width:100%; height:90px;
-  background:#000; color:#e5e7eb;
-  border:none; border-radius:8px;
-  padding:6px 8px;
-  font-family:var(--aarya-font);
-  font-size:12px;
-}
-#agentOutput__aarya {
-  margin-top:8px; padding:6px 8px;
-  height:90px; overflow:auto;
-  background:#000; color:#22c55e;
-  border-radius:8px;
-  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New",monospace;
-  font-size:11px;
-}
-#runAgent__aarya {
-  margin-top:6px;
-  padding:6px 12px;
-  background:var(--accent);
-  color:#0f172a;
-  border:none;
-  border-radius:999px;
-  font-size:13px;
-}
+    /* Home overlay full screen */
+    #homeOverlay__aarya {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #020617, #000000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 900;
+    }
+    #homeOverlay__aarya .home-card {
+      width: min(540px, 92vw);
+      border-radius: 20px;
+      border: 1px solid #1e293b;
+      background: #020617;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+      padding: 18px 18px 16px;
+    }
+    #homeOverlay__aarya .home-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    #homeOverlay__aarya .home-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    #homeOverlay__aarya .home-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+    #homeOverlay__aarya .home-btn {
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      background: #020617;
+      padding: 8px 9px;
+      font-size: 12px;
+      text-align: left;
+      color: #e5e7eb;
+    }
+    #homeOverlay__aarya .home-btn span {
+      display:block;
+      font-size:18px;
+      margin-bottom:4px;
+    }
 
-/* Console toggle button (bottom-centre) */
-#consoleToggle__aarya {
-  position:fixed;
-  left:50%;
-  bottom:12px;
-  transform:translateX(-50%);
-  width:56px; height:56px;
-  border-radius:999px;
-  border:1px solid #0b1120;
-  background:radial-gradient(circle at 30% 30%, #0f172a,#020617);
-  display:flex; align-items:center; justify-content:center;
-  color:#e5e7eb;
-  font-size:11px;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  box-shadow:0 10px 26px rgba(0,0,0,0.85);
-  cursor:pointer;
-  z-index:1000;
-}
-#consoleToggle__aarya span {
-  pointer-events:none;
-}
+    /* Home mode toggles */
+    body.home-mode__aarya #homeOverlay__aarya {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    body.home-mode__aarya #agentBox__aarya,
+    body.home-mode__aarya #consoleToggle__aarya,
+    body.home-mode__aarya #aaryaUploadTray {
+      display: none !important;
+    }
+  </style>
 
-/* Hidden state */
-body.console-hidden__aarya #agentBox__aarya {
-  transform:translateY(140%);
-  opacity:0;
-  pointer-events:none;
-}
-body.console-hidden__aarya #consoleToggle__aarya {
-  background:radial-gradient(circle at 30% 30%, #22c55e,#16a34a);
-  color:#022c22;
-}
+  <!-- Preview button + overlay -->
+  <style id="aaryaPreviewCSS">
+    #previewButton__aarya {
+      position: fixed;
+      right: 16px;
+      bottom: 12px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 1px solid #0b1120;
+      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.85);
+      z-index: 1001;
+    }
+    #previewButton__aarya:hover {
+      background: #0f172aaa;
+    }
 
-/* Mobile tweaks */
-@media (max-width:768px){
-  #agentBox__aarya {
-    right:8px; left:8px;
-    bottom:70px;
-    width:auto;
-  }
-}
-</style>
-<style id="aarya-sidebar-css">
-  #sidebar__aarya {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 260px;
-    max-width: 80vw;
-    padding: 16px 12px;
-    background: #020617;
-    border-right: 1px solid #0f172a;
-    box-shadow: 14px 0 30px rgba(0,0,0,0.75);
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    z-index: 1000;
-  }
-  body.sidebar-open__aarya #sidebar__aarya {
-    transform: translateX(0);
-  }
-  #sidebar__aarya .sidebar-section {
-    border-radius: 12px;
-    border: 1px solid #111827;
-    background: radial-gradient(circle at top left,#020617,#020617);
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  #sidebar__aarya .sidebar-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #e5e7eb;
-    margin-bottom: 6px;
-  }
-  #sidebar__aarya .sidebar-text {
-    font-size: 11px;
-    color: #94a3b8;
-    line-height: 1.4;
-  }
-  #sidebar__aarya .sidebar-item {
-    width: 100%;
-    margin-top: 6px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid #1e293b;
-    background: #020617;
-    color: #e5e7eb;
-    font-size: 12px;
-    text-align: left;
-    cursor: pointer;
-  }
-  </style><style>
-  #sidebar__aarya {
-    position:fixed;
-    top:0; left:0; bottom:0;
-    width:250px;
-    background:#020617;
-    color:white;
-    border-right:1px solid #0f172a;
-    padding-top:80px;
-    transform:translateX(-100%);
-    transition:0.25s ease;
-    z-index:999;
-  }
-  #sidebar__aarya.open { transform:translateX(0); }
-  .sidebar-item {
-    padding:12px 16px;
-    border-bottom:1px solid #0b1120;
-    font-size:14px;
-  }
-  </style><style id="aaryaSidebarCSS">
-      #sidebar__aarya {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 260px;
-        background: #020617;
-        border-right: 1px solid #020617;
-        box-shadow: 8px 0 24px rgba(0,0,0,0.8);
-        transform: translateX(-100%);
-        transition: transform 0.25s ease;
-        z-index: 1000;
-        padding-top: 80px;
-        padding-bottom: 16px;
-        display: flex;
-        flex-direction: column;
+    #previewOverlay__aarya {
+      position: fixed;
+      inset: 0;
+      background: #020617;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 950;
+    }
+    #previewOverlay__aarya .preview-header {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid #1e293b;
+      background: #020617;
+    }
+    #previewOverlay__aarya .preview-back {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #previewOverlay__aarya .preview-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    #previewOverlay__aarya .preview-body {
+      flex: 1;
+      overflow: auto;
+      padding: 10px;
+      background: #000000;
+    }
+    #previewFrame__aarya {
+      min-height: 100%;
+    }
+
+    body.preview-mode__aarya #previewOverlay__aarya {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    body.preview-mode__aarya #agentBox__aarya,
+    body.preview-mode__aarya #consoleToggle__aarya,
+    body.preview-mode__aarya #aaryaUploadTray {
+      display: none !important;
+    }
+  </style>
+
+  <!-- Hide top-left back arrow (we control with bottom buttons) -->
+  <style id="aaryaModeFixCSS">
+    #previewBack__aarya {
+      display: none !important;
+    }
+  </style>
+
+  <!-- Menu visibility (sirf home me) -->
+  <style id="menuVisibility__aarya">
+    #menuButton__aarya {
+      display: none !important;
+    }
+    body.home-mode__aarya #menuButton__aarya {
+      display: flex !important;
+    }
+  </style>
+
+  <!-- Files / Projects panels -->
+  <style id="aaryaFilesPanelCSS">
+    #filesPanel__aarya,
+    #projectsPanel__aarya {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 64px;
+      bottom: 0;
+      background: #020617;
+      border-top: 1px solid #1e293b;
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.8);
+      display: none;
+      flex-direction: column;
+      z-index: 950;
+    }
+    #filesPanel__aarya .files-header,
+    #projectsPanel__aarya .projects-header {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    #filesPanel__aarya .files-close,
+    #projectsPanel__aarya .projects-close {
+      margin-left: auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #filesPanel__aarya .files-body,
+    #projectsPanel__aarya .projects-body {
+      flex: 1;
+      padding: 10px;
+      font-size: 12px;
+      color: #e5e7eb;
+      overflow: auto;
+    }
+    .project-card__aarya {
+      border-radius: 14px;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(15,23,42,0.8);
+    }
+    .project-card__aarya h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+    .project-card__aarya p {
+      margin: 0;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+  </style>
+
+  <!-- Global theme + layout -->
+  <style id="aarya-font-and-upload-fix">
+    :root {
+      --aarya-font: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans Devanagari", "Roboto", "Helvetica Neue",
+        Arial, sans-serif;
+      --bg: #020617;
+      --border-subtle: #1e293b;
+      --accent: #38bdf8;
+      --accent-green: #16a34a;
+      --text-main: #e5e7eb;
+    }
+
+    html, body {
+      margin:0; padding:0;
+      background:#020617;
+      color:var(--text-main);
+      font-family:var(--aarya-font);
+    }
+
+    /* Save button (top-right) */
+    #btnSaveHtml__aarya {
+      position:fixed; top:10px; right:10px;
+      padding:10px 16px;
+      background:var(--accent-green);
+      color:white;
+      border:none;
+      border-radius:999px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.6);
+      font-size:13px;
+      z-index:1001;
+    }
+
+    /* Menu icon (top-left) */
+    #menuButton__aarya {
+      position:fixed; top:16px; left:16px;
+      width:52px; height:52px;
+      border-radius:999px;
+      border:1px solid #0b1120;
+      background:radial-gradient(circle at 30% 30%, #0f172a,#020617);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 10px 24px rgba(0,0,0,0.7);
+      cursor:pointer;
+      z-index:1001;
+    }
+    #menuButton__aarya span {
+      display:block;
+      width:22px; height:2px;
+      background:#e5e7eb;
+      border-radius:999px;
+      box-shadow:0 7px 0 #e5e7eb, 0 -7px 0 #e5e7eb;
+    }
+
+    /* Upload tray (right) */
+    #aaryaUploadTray {
+      position:fixed; top:70px; right:10px;
+      display:flex; flex-direction:column; gap:8px;
+      z-index:1000;
+    }
+    #aaryaUploadTray .tray-item {
+      width:48px; height:48px;
+      border:1px solid var(--border-subtle);
+      border-radius:12px;
+      overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      background:#020617;
+      box-shadow:0 10px 24px rgba(0,0,0,0.8);
+      cursor:pointer;
+    }
+    #aaryaUploadTray img, #aaryaUploadTray video {
+      width:100%; height:100%; object-fit:cover; display:none;
+    }
+
+    /* Agent box (bottom-right) */
+    #agentBox__aarya {
+      position:fixed; right:10px; bottom:70px;
+      width:min(460px, 96vw);
+      background:#020617;
+      border:1px solid var(--border-subtle);
+      border-radius:16px;
+      box-shadow:0 14px 36px rgba(0,0,0,0.8);
+      padding:10px;
+      z-index:999;
+      transition:transform 0.22s ease, opacity 0.22s ease;
+    }
+    #agentInput__aarya {
+      width:100%; height:90px;
+      background:#000; color:#e5e7eb;
+      border:none; border-radius:8px;
+      padding:6px 8px;
+      font-family:var(--aarya-font);
+      font-size:12px;
+    }
+    #agentOutput__aarya {
+      margin-top:8px; padding:6px 8px;
+      height:90px; overflow:auto;
+      background:#000; color:#22c55e;
+      border-radius:8px;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono","Courier New",monospace;
+      font-size:11px;
+    }
+    #runAgent__aarya {
+      margin-top:6px;
+      padding:6px 12px;
+      background:var(--accent);
+      color:#0f172a;
+      border:none;
+      border-radius:999px;
+      font-size:13px;
+    }
+
+    /* Console toggle button (bottom-centre) */
+    #consoleToggle__aarya {
+      position:fixed;
+      left:50%;
+      bottom:12px;
+      transform:translateX(-50%);
+      width:56px; height:56px;
+      border-radius:999px;
+      border:1px solid #0b1120;
+      background:radial-gradient(circle at 30% 30%, #0f172a,#020617);
+      display:flex; align-items:center; justify-content:center;
+      color:#e5e7eb;
+      font-size:11px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      box-shadow:0 10px 26px rgba(0,0,0,0.85);
+      cursor:pointer;
+      z-index:1000;
+    }
+    #consoleToggle__aarya span {
+      pointer-events:none;
+    }
+
+    body.console-hidden__aarya #agentBox__aarya {
+      transform:translateY(140%);
+      opacity:0;
+      pointer-events:none;
+    }
+    body.console-hidden__aarya #consoleToggle__aarya {
+      background:radial-gradient(circle at 30% 30%, #22c55e,#16a34a);
+      color:#022c22;
+    }
+
+    @media (max-width:768px){
+      #agentBox__aarya {
+        right:8px; left:8px;
+        bottom:70px;
+        width:auto;
       }
-      #sidebar__aarya.open {
-        transform: translateX(0);
-      }
-      .sidebar-section__aarya {
-        padding: 10px 14px;
-        border-bottom: 1px solid #0b1120;
-      }
-      .sidebar-title__aarya {
-        font-size: 12px;
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-      .sidebar-text__aarya {
-        font-size: 11px;
-        color: #94a3b8;
-        line-height: 1.4;
-      }
-    </style></head>
-<body class="">
+    }
+
+    /* Sidebar basic layout */
+    #sidebar__aarya {
+      position:fixed;
+      top:0; left:0; bottom:0;
+      width:260px;
+      background:#020617;
+      color:white;
+      border-right:1px solid #0f172a;
+      padding-top:80px;
+      transform:translateX(-100%);
+      transition:0.25s ease;
+      z-index:999;
+      padding-bottom:16px;
+      display:flex;
+      flex-direction:column;
+    }
+    #sidebar__aarya.open { transform:translateX(0); }
+  </style>
+</head>
+
+<body class="home-mode__aarya">
 
 <button id="btnSaveHtml__aarya">Save / Download HTML</button>
 
@@ -269,155 +465,265 @@ body.console-hidden__aarya #consoleToggle__aarya {
 
 <div id="aaryaUploadTray">
   <label class="tray-item">
-    <input id="fileInput__aarya" type="file" accept="image/*,video/*" hidden="">
+    <input id="fileInput__aarya" type="file" accept="image/*,video/*" hidden />
     <span id="uploadPlaceholder__aarya">📁</span>
-    <img id="uploadPreviewImg__aarya">
-    <video id="uploadPreviewVid__aarya" muted=""></video>
+    <img id="uploadPreviewImg__aarya" />
+    <video id="uploadPreviewVid__aarya" muted></video>
   </label>
 </div>
 
 <div id="agentBox__aarya">
   <textarea id="agentInput__aarya" placeholder="Yahan JS ya command likho. Example: (() =&gt; { alert('Aarya working'); })();"></textarea>
   <button id="runAgent__aarya">Run Code</button>
-  <pre id="agentOutput__aarya">🟢 Aarya Agent Ready
-✅ JS executed
-❌ Error: Private field '#sidebar__aarya' must be declared in an enclosing class
-❌ Error: Unexpected token '&lt;'
-✅ JS executed
-🟢 Aarya Agent Ready
-✅ JS executed
-🟢 Aarya Agent Ready
-✅ JS executed
-✅ JS executed
-🟢 Aarya Agent Ready
-✅ JS executed
-🟢 Aarya Agent Ready
-❌ Error: Selftest is not defined
-✅ Sidebar CSS injected.
-🔌 Menu ↔ Sidebar wired.
-🧠 Smart layer ON. Ab 'selftest' ya 'menu ke neeche sidebar banao' jaisi command likh sakte ho.
-✅ JS executed
-🔍 Self-test start...
-✅ Menu present
-✅ Sidebar present
-✅ Smart layer installed
-✅ Command samjha: sidebar setup complete.
-✅ Command samjha: sidebar setup complete.
-✅ Command samjha: sidebar setup complete.
-✅ Command samjha: sidebar setup complete.
-✅ JS executed (raw).
-✅ Command samjha: sidebar setup complete.
-🟢 Aarya Agent Ready
-✅ Sidebar smart patch installed. Ab Save / Download HTML dabao, phir nayi file mein menu se sidebar test karo.
-✅ JS executed</pre>
+  <pre id="agentOutput__aarya">🟢 Aarya Agent Ready</pre>
+  <button id="agentFixButton__aarya" style="margin-top: 6px; margin-left: 4px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgb(30, 41, 59); background: rgb(2, 6, 23); color: rgb(229, 231, 235); font-size: 11px; cursor: pointer; display: none;">🔧 Auto-fix (permission)</button>
 </div>
 
 <button id="consoleToggle__aarya"><span>CON</span></button>
 
 <script>
-// Save HTML button
-document.getElementById("btnSaveHtml__aarya").onclick = () => {
-  const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-  const blob = new Blob([html], {type:"text/html"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "Aarya_Workbench_menu_console.html";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-};
+  // Save HTML button – UTF-8 + fixed filename
+  document.getElementById("btnSaveHtml__aarya").onclick = () => {
+    const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "index.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
-// Menu button (abhi ke liye simple alert / future mein sidebar etc.)
-document.getElementById("menuButton__aarya").onclick = () => {
-  alert("Menu yahan se open hoga (isko hum baad mein sidebar se wire karenge).");
-};
+  // Menu button toggles sidebar
+  const menuBtn = document.getElementById("menuButton__aarya");
 
-// Upload preview
-const fileInput = document.getElementById("fileInput__aarya");
-const placeholder = document.getElementById("uploadPlaceholder__aarya");
-const img = document.getElementById("uploadPreviewImg__aarya");
-const vid = document.getElementById("uploadPreviewVid__aarya");
+  // Upload preview
+  const fileInput = document.getElementById("fileInput__aarya");
+  const placeholder = document.getElementById("uploadPlaceholder__aarya");
+  const img = document.getElementById("uploadPreviewImg__aarya");
+  const vid = document.getElementById("uploadPreviewVid__aarya");
+  document.querySelector("#aaryaUploadTray .tray-item").onclick = () => fileInput.click();
 
-document.querySelector("#aaryaUploadTray .tray-item").onclick = () => fileInput.click();
-
-fileInput.onchange = () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  const isVideo = file.type.startsWith("video/");
-  placeholder.style.display = "none";
-  if (isVideo) {
-    img.style.display = "none";
-    vid.style.display = "block";
-    vid.src = url;
-    vid.play().catch(()=>{});
-  } else {
-    vid.style.display = "none";
-    img.style.display = "block";
-    img.src = url;
-  }
-};
-
-// Agent executor
-function log(msg){
-  const out = document.getElementById("agentOutput__aarya");
-  out.textContent += "\n" + msg;
-  out.scrollTop = out.scrollHeight;
-}
-document.getElementById("runAgent__aarya").onclick = () => {
-  const code = document.getElementById("agentInput__aarya").value;
-  try {
-    new Function(code)();
-    log("✅ JS executed");
-  } catch(e){
-    log("❌ Error: " + e.message);
-  }
-};
-log("🟢 Aarya Agent Ready");
-
-// Console toggle button wiring
-(function(){
-  const btn = document.getElementById("consoleToggle__aarya");
-  if (!btn) return;
-  let hidden = false;
-  const sync = () => {
-    if (hidden) {
-      document.body.classList.add("console-hidden__aarya");
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith("video/");
+    placeholder.style.display = "none";
+    if (isVideo) {
+      img.style.display = "none";
+      vid.style.display = "block";
+      vid.src = url;
+      vid.play().catch(()=>{});
     } else {
-      document.body.classList.remove("console-hidden__aarya");
+      vid.style.display = "none";
+      img.style.display = "block";
+      img.src = url;
     }
   };
-  btn.addEventListener("click", () => {
-    hidden = !hidden;
+
+  // Agent executor
+  function log(msg){
+    const out = document.getElementById("agentOutput__aarya");
+    out.textContent += "\n" + msg;
+    out.scrollTop = out.scrollHeight;
+  }
+  document.getElementById("runAgent__aarya").onclick = () => {
+    const code = document.getElementById("agentInput__aarya").value;
+    try {
+      new Function(code)();
+      log("✅ JS executed");
+    } catch(e){
+      log("❌ Error: " + e.message);
+    }
+  };
+  log("✅ JS executed");
+
+  // Console toggle button wiring
+  (function(){
+    const btn = document.getElementById("consoleToggle__aarya");
+    if (!btn) return;
+    let hidden = false;
+    const sync = () => {
+      if (hidden) {
+        document.body.classList.add("console-hidden__aarya");
+      } else {
+        document.body.classList.remove("console-hidden__aarya");
+      }
+    };
+    btn.addEventListener("click", () => {
+      hidden = !hidden;
+      sync();
+    });
     sync();
-  });
-  sync();
-})();
+  })();
 </script>
 
+<!-- Sidebar with Files + Projects -->
+<aside id="sidebar__aarya">
+  <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+    <div id="sidebarFilesBtn__aarya" style="padding: 14px; border: 1px solid rgb(30, 41, 59); border-radius: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: rgb(226, 232, 240); background: rgba(255, 255, 255, 0.02);">
+      📁 <span>Files</span>
+    </div>
+    <div id="sidebarProjectsBtn__aarya" style="padding: 14px; border: 1px solid rgb(30, 41, 59); border-radius: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: rgb(226, 232, 240); background: rgba(255, 255, 255, 0.02);">
+      📦 <span>Projects</span>
+    </div>
+  </div>
+</aside>
 
+<script>
+  (function () {
+    const sidebar = document.getElementById("sidebar__aarya");
+    const btn = document.getElementById("menuButton__aarya");
+    if (!sidebar || !btn) return;
+    btn.onclick = function () {
+      sidebar.classList.toggle("open");
+    };
+  })();
+</script>
 
-<aside id="sidebar__aarya" class="">
-      <div class="sidebar-section">
-        <div class="sidebar-title">📂 Builder Menu</div>
-        <div class="sidebar-text">
-          Yahan se hum dheere-dheere:
-          <br>• Files panel banayenge
-          <br>• Modules add karenge
-          <br>• Settings wagairah rakhenge
-        </div>
-        <button type="button" class="sidebar-item" data-action="files">📁 Files (coming soon)</button>
-        <button type="button" class="sidebar-item" data-action="logs">📜 Logs (coming soon)</button>
-      </div>
-    </aside><script id="aaryaSidebarBoot">
-      (function () {
-        const sidebar = document.getElementById("sidebar__aarya");
-        const btn = document.getElementById("menuButton__aarya");
-        if (!sidebar || !btn) return;
-        btn.onclick = function () {
-          sidebar.classList.toggle("open");
-        };
-      })();
-    </script></body></html>
+<!-- Home overlay + buttons -->
+<button id="homeButton__aarya">🏠</button>
+<div id="homeOverlay__aarya">
+  <div class="home-card">
+    <div class="home-title">Aarya Workbench – Home</div>
+    <div class="home-sub">
+      Yahan se hum dheere-dheere saare main modules add karenge:
+      Projects, Files, Smart Scan, Preview, Ledger, etc.
+    </div>
+    <div class="home-grid">
+      <button class="home-btn">
+        <span>🧠</span>
+        Aarya Intelligence
+      </button>
+      <button class="home-btn">
+        <span>📂</span>
+        Projects (coming soon)
+      </button>
+      <button class="home-btn">
+        <span>🪄</span>
+        Smart Scan (coming soon)
+      </button>
+      <button class="home-btn">
+        <span>📺</span>
+        Preview Area (coming soon)
+      </button>
+    </div>
+  </div>
+</div>
+
+<button id="agentViewButton__aarya">🤖</button>
+
+<!-- Preview overlay -->
+<div id="previewOverlay__aarya">
+  <div class="preview-header">
+    <div class="preview-back" id="previewBack__aarya">←</div>
+    <div class="preview-title">Preview</div>
+  </div>
+  <div class="preview-body">
+    <div id="previewFrame__aarya">
+      <h1 style="color:white;text-align:center;margin-top:40px;">Aarya Preview Test</h1>
+    </div>
+  </div>
+</div>
+<button id="previewButton__aarya">👁</button>
+
+<!-- Files + Projects panels -->
+<div id="filesPanel__aarya">
+  <div class="files-header">
+    📂 Files
+    <div class="files-close" id="filesClose__aarya">×</div>
+  </div>
+  <div class="files-body">
+    Yahan future mein Aarya tumhare projects / HTML / assets list karegi.
+    Abhi ke liye yeh demo panel hai.
+  </div>
+</div>
+
+<div id="projectsPanel__aarya">
+  <div class="projects-header">
+    📦 Projects
+    <div class="projects-close" id="projectsClose__aarya">×</div>
+  </div>
+  <div class="projects-body">
+    <div class="project-card__aarya" id="ledgerProject__aarya">
+      <h3>📒 Kaccha Pakka Ledger – Project 1</h3>
+      <p>
+        Ye tumhara pehla ledger project hai. Abhi empty workspace hai.
+        Is par tap karoge to Aarya tumhe Agent view (Replit style)
+        me le jayegi jahan hum dheere-dheere ledger app banayenge.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Home / Agent / Preview mode switching
+  const homeBtn = document.getElementById("homeButton__aarya");
+  const agentBtn = document.getElementById("agentViewButton__aarya");
+  const previewBtn = document.getElementById("previewButton__aarya");
+
+  function setHomeMode() {
+    document.body.classList.add("home-mode__aarya");
+    document.body.classList.remove("preview-mode__aarya");
+  }
+  function setAgentMode() {
+    document.body.classList.remove("home-mode__aarya");
+    document.body.classList.remove("preview-mode__aarya");
+  }
+  function setPreviewMode() {
+    document.body.classList.remove("home-mode__aarya");
+    document.body.classList.add("preview-mode__aarya");
+  }
+
+  if (homeBtn) homeBtn.onclick = setHomeMode;
+  if (agentBtn) agentBtn.onclick = setAgentMode;
+  if (previewBtn) previewBtn.onclick = () => {
+    setPreviewMode();
+  };
+
+  // Files / Projects panel wiring
+  const filesPanel = document.getElementById("filesPanel__aarya");
+  const projectsPanel = document.getElementById("projectsPanel__aarya");
+  const filesClose = document.getElementById("filesClose__aarya");
+  const projectsClose = document.getElementById("projectsClose__aarya");
+  const filesBtn = document.getElementById("sidebarFilesBtn__aarya");
+  const projectsBtn = document.getElementById("sidebarProjectsBtn__aarya");
+  const ledgerProject = document.getElementById("ledgerProject__aarya");
+
+  if (filesBtn && filesPanel) {
+    filesBtn.onclick = () => {
+      filesPanel.style.display = "flex";
+      projectsPanel.style.display = "none";
+    };
+  }
+  if (projectsBtn && projectsPanel) {
+    projectsBtn.onclick = () => {
+      projectsPanel.style.display = "flex";
+      filesPanel.style.display = "none";
+    };
+  }
+  if (filesClose) {
+    filesClose.onclick = () => { filesPanel.style.display = "none"; };
+  }
+  if (projectsClose) {
+    projectsClose.onclick = () => { projectsPanel.style.display = "none"; };
+  }
+
+  // Ledger project card → Agent view
+  if (ledgerProject) {
+    ledgerProject.onclick = () => {
+      setAgentMode();
+      document.getElementById("sidebar__aarya").classList.remove("open");
+      log("📒 Kaccha Pakka Ledger project open (Agent workspace).");
+    };
+  }
+
+  // Start in home mode
+  setHomeMode();
+</script>
+
+</body>
+</html>
