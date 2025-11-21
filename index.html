@@ -767,7 +767,137 @@
   // Start in home mode
   setHomeMode();
 </script>
+<script>
+(function () {
+  function setupAaryaSidebarAndVideoMaker() {
+    const sidebar = document.getElementById("sidebar__aarya");
+    if (!sidebar) return;
 
+    const toolsPanel  = document.getElementById("aaryaToolsPanel__aarya");
+    const toolsTitle  = document.getElementById("aaryaToolsTitle__aarya");
+    const toolsList   = document.getElementById("aaryaToolsList__aarya");
+    const toolsClose  = document.getElementById("aaryaToolsClose__aarya");
+    const videoOverlay = document.getElementById("aaryaVideoMakerCleanOverlay");
+    const vmBack      = document.getElementById("vmBackBtn__aarya");
+
+    // Ensure panels hidden by default
+    if (toolsPanel) {
+      toolsPanel.style.display = "none";
+      if (toolsClose) {
+        toolsClose.onclick = function () {
+          toolsPanel.style.display = "none";
+        };
+      }
+    }
+
+    if (videoOverlay) {
+      // default hidden
+      videoOverlay.style.display = "none";
+      if (vmBack) {
+        vmBack.onclick = function () {
+          videoOverlay.style.display = "none";
+        };
+      }
+    }
+
+    function findRow(labelText) {
+      const spans = Array.from(sidebar.querySelectorAll("span"));
+      const span = spans.find(
+        el => (el.textContent || "").trim() === labelText
+      );
+      return span ? (span.closest("button,div") || span) : null;
+    }
+
+    function makeToolButton(label, icon) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.innerHTML =
+        '<span style="font-size:16px;margin-right:8px;">' +
+        icon +
+        "</span><span>" +
+        label +
+        "</span>";
+      btn.style.cssText = `
+        width:100%;
+        padding:9px 10px;
+        border-radius:14px;
+        border:1px solid rgba(148,163,184,0.4);
+        background:radial-gradient(circle at 0 0,#0b1120,#020617);
+        color:#e5e7eb;
+        font-size:14px;
+        display:flex;
+        align-items:center;
+        text-align:left;
+        cursor:pointer;
+        box-shadow:0 10px 24px rgba(15,23,42,0.9);
+      `;
+      btn.addEventListener("click", () => {
+        alert('"' + label + '" ka asli kaam baad mein wire karenge.\nAbhi sirf UI test hai.');
+      });
+      return btn;
+    }
+
+    function showTools(kind) {
+      if (!toolsPanel || !toolsTitle || !toolsList) return;
+
+      toolsList.innerHTML = "";
+
+      if (kind === "files") {
+        toolsTitle.textContent = "FILES TOOLS";
+        toolsList.appendChild(makeToolButton("New File", "➕"));
+        toolsList.appendChild(makeToolButton("Open File", "📂"));
+        toolsList.appendChild(makeToolButton("Save File", "💾"));
+        toolsList.appendChild(makeToolButton("Delete File", "🗑️"));
+      } else if (kind === "projects") {
+        toolsTitle.textContent = "PROJECT TOOLS";
+        toolsList.appendChild(makeToolButton("New Project", "🆕"));
+        toolsList.appendChild(makeToolButton("Open Project", "📦"));
+        toolsList.appendChild(makeToolButton("Project Files", "📁"));
+        toolsList.appendChild(makeToolButton("Delete Project", "❌"));
+      } else {
+        toolsPanel.style.display = "none";
+        return;
+      }
+
+      toolsPanel.style.display = "flex";
+    }
+
+    const filesRow    = findRow("Files");
+    const projectsRow = findRow("Projects");
+    const videoRow    = findRow("Video Maker");
+
+    if (filesRow) {
+      filesRow.style.cursor = "pointer";
+      filesRow.onclick = function () {
+        showTools("files");
+        if (videoOverlay) videoOverlay.style.display = "none";
+      };
+    }
+
+    if (projectsRow) {
+      projectsRow.style.cursor = "pointer";
+      projectsRow.onclick = function () {
+        showTools("projects");
+        if (videoOverlay) videoOverlay.style.display = "none";
+      };
+    }
+
+    if (videoRow) {
+      videoRow.style.cursor = "pointer";
+      videoRow.onclick = function () {
+        if (toolsPanel) toolsPanel.style.display = "none";
+        if (videoOverlay) videoOverlay.style.display = "flex";
+      };
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupAaryaSidebarAndVideoMaker);
+  } else {
+    setupAaryaSidebarAndVideoMaker();
+  }
+})();
+          </script>
 
 
 </body></html>
